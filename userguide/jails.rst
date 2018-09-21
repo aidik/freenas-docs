@@ -1369,6 +1369,61 @@ using :command:`iocage`.
   `readthedocs.io <http://iocage.readthedocs.io/en/latest/index.html>`__.
 
 
+.. index:: Migrate Jails, jail migration,
+.. _Migrating Warden Jails to iocage:
+
+Migrating Warden Jails to iocage
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. TODO: Check with Brandon if linux jail templates are supported for
+   migration or if there are any other cautions to include in this
+   section.
+
+Previous versions of %brand% used
+`Warden <https://www.freshports.org/sysutils/warden/>`__ to manage jails.
+iocage replaced Warden in %brand% 11.2 and is incompatible with jails
+created by Warden. There is a built-in script to migrate Warden jails to
+iocage which is usable in the :ref:`Shell`.
+
+.. warning:: Jail migration is complicated and unlikely to cover all
+   edge cases! Back up any critical jail data before attempting a
+   migration.
+
+
+Be sure :ref:`jail storage <Jail Storage>` is configured before
+migrating a jail. Log in to the |web-ui| and go to the :ref:`Shell`.
+There are several commands to use when migrating jails:
+
+* :command:`warden list`: view all legacy jails
+
+* :command:`warden stop [jail-name]`: stop a jail that is running
+
+* :samp:`migrate_warden.py -j [jail-name] -p [pool-name]`: migrate a
+  Warden jail to iocage and store it in the named pool.
+
+* :command:`iocage list`: see all new jails
+
+
+Here is an simple example of migrating a Warden jail to iocage:
+
+.. code-block:: none
+
+   [root@freenas ~]# warden list
+   ID                       AUTOSTART    STATUS       TYPE
+   ---------------------------------------------------------------------------
+   warden-jail1             Disabled     Stopped      freebsd-template
+
+   [root@freenas ~]# migrate_warden.py -j warden-jail1 -p pool1
+   -- Migrating: warden-jail1 --
+
+   [root@freenas ~]# iocage list
+   +-----+--------------------+-------+-------------------+-------------+
+   | JID |        NAME        | STATE |      RELEASE      |     IP4     |
+   +=====+====================+=======+===================+=============+
+   | -   | warden-jail1       | down  | 11.2-RELEASE      | -           |
+   +-----+--------------------+-------+-------------------+-------------+
+
+
 Managing iocage Jails
 ~~~~~~~~~~~~~~~~~~~~~
 
